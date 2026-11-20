@@ -17,7 +17,7 @@ const BOT_DIR = process.env.MAKEFUN_BOT_DIR ?? '/bot';
 const OUTPUT_DIR = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
 // Validate POST.json before copying: it must be a JSON object whose `url` field is a string
-// pointing at an X/Twitter post. A bad file fails loudly instead of being handed to the gate.
+// pointing at an X/Twitter post (/<handle>/status/<id>). A bad file fails loudly instead of being handed to the gate.
 let post;
 try {
   post = JSON.parse(readFileSync(join(BOT_DIR, 'POST.json'), 'utf8'));
@@ -30,7 +30,7 @@ if (
   post === null ||
   Array.isArray(post) ||
   typeof post.url !== 'string' ||
-  !/^https:\/\/(x\.com|twitter\.com)\//.test(post.url)
+  !/^https:\/\/(x\.com|twitter\.com)\/[^/]+\/status\//.test(post.url)
 ) {
   console.error(
     `POST.json is invalid: expected a JSON object with a "url" string starting with https://x.com/ or https://twitter.com/, got: ${JSON.stringify(post)}`,
